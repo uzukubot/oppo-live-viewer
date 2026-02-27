@@ -10,6 +10,7 @@ import sys
 from io import BytesIO
 from pathlib import Path
 
+from PIL import Image
 from PyQt6.QtCore import Qt, QTimer, QUrl, pyqtSignal
 from PyQt6.QtGui import (
     QAction,
@@ -106,6 +107,44 @@ class OPPOLivePhoto:
         return self.is_live
 
 
+def smart_scale_pixmap(jpeg_data: bytes, target_size: tuple) -> QPixmap:
+    """
+    智能缩放图片：
+    - 缩小时使用 Mitchell 算法（更平滑，适合缩略图）
+    - 放大时使用 Lanczos3 算法（更锐利，适合放大显示）
+    """
+    # 使用 Pillow 加载图片
+    img = Image.open(BytesIO(jpeg_data))
+
+    # 转换为 RGB 模式（处理 RGBA 等）
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+
+    orig_width, orig_height = img.size
+    target_width, target_height = target_size
+
+    # 计算保持宽高比的目标尺寸
+    ratio = min(target_width / orig_width, target_height / orig_height)
+    new_width = int(orig_width * ratio)
+    new_height = int(orig_height * ratio)
+
+    # 选择缩放算法
+    if new_width < orig_width or new_height < orig_height:
+        # 缩小：使用 Mitchell 算法
+        resample = Image.Resampling.BICUBIC  # Mitchell 近似
+    else:
+        # 放大：使用 Lanczos 算法
+        resample = Image.Resampling.LANCZOS
+
+    # 缩放图片
+    scaled_img = img.resize((new_width, new_height), resample)
+
+    # 转换为 QPixmap
+    data = scaled_img.tobytes("raw", "RGB")
+    qimage = QImage(data, new_width, new_height, new_width * 3, QImage.Format.Format_RGB888)
+    return QPixmap.fromImage(qimage)
+
+
 class LivePhotoWidget(QWidget):
     """Live Photo展示组件"""
 
@@ -158,15 +197,16 @@ class LivePhotoWidget(QWidget):
 
         # 加载JPEG
         jpeg_data = photo.get_jpeg()
-        pixmap = QPixmap()
-        if pixmap.loadFromData(jpeg_data):
-            scaled_pixmap = pixmap.scaled(
-                self.image_label.size(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            )
-            self.image_label.setPixmap(scaled_pixmap)
-            self.image_label.setText("")
+        if jpeg_data:
+            try:
+                scaled_pixmap = smart_scale_pixmap(
+                    jpeg_data, 
+                    (self.image_label.width(), self.image_label.height())
+                )
+                self.image_label.setPixmap(scaled_pixmap)
+                self.image_label.setText("")
+            except Exception as e:
+                self.image_label.setText(f"无法加载图片: {e}")
         else:
             self.image_label.setText("无法加载图片")
 
@@ -240,14 +280,15 @@ class LivePhotoWidget(QWidget):
         if self.current_photo and not self.is_playing:
             # 重新加载并缩放静态图
             jpeg_data = self.current_photo.get_jpeg()
-            pixmap = QPixmap()
-            if pixmap.loadFromData(jpeg_data):
-                scaled_pixmap = pixmap.scaled(
-                    self.image_label.size(),
-                    Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation,
-                )
-                self.image_label.setPixmap(scaled_pixmap)
+            if jpeg_data:
+                try:
+                    scaled_pixmap = smart_scale_pixmap(
+                        jpeg_data,
+                        (self.image_label.width(), self.image_label.height())
+                    )
+                    self.image_label.setPixmap(scaled_pixmap)
+                except Exception:
+                    pass
 
 
 class MainWindow(QMainWindow):
