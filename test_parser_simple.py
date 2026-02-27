@@ -16,16 +16,16 @@ class OPPOLivePhoto:
     def parse(self):
         """解析Live Photo文件"""
         try:
-            with open(self.filepath, 'rb') as f:
+            with open(self.filepath, "rb") as f:
                 data = f.read()
 
             # 搜索MP4起始标记 'ftypmp42'
-            mp4_marker = b'ftypmp42'
+            mp4_marker = b"ftypmp42"
             offset = data.find(mp4_marker)
 
             if offset == -1:
                 # 尝试其他可能的标记
-                mp4_marker = b'ftypisom'
+                mp4_marker = b"ftypisom"
                 offset = data.find(mp4_marker)
 
             if offset == -1:
@@ -83,17 +83,18 @@ def test_parser():
         print(f"📍 MP4偏移位置: {photo.mp4_offset} 字节")
 
         # 验证JPEG标记
-        if jpeg_data[:2] == b'\xff\xd8':
+        if jpeg_data[:2] == b"\xff\xd8":
             print("✅ JPEG格式验证通过")
 
         # 验证MP4标记
-        if b'ftypmp42' in mp4_data or b'ftypisom' in mp4_data:
+        if b"ftypmp42" in mp4_data or b"ftypisom" in mp4_data:
             print("✅ MP4格式验证通过")
 
         # 提取MP4到文件用于测试
         import tempfile
+
         temp_mp4 = "/tmp/test_live_video.mp4"
-        with open(temp_mp4, 'wb') as f:
+        with open(temp_mp4, "wb") as f:
             f.write(mp4_data)
         print(f"💾 MP4已保存到: {temp_mp4}")
 
@@ -103,7 +104,8 @@ def test_parser():
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from pathlib import Path
+
     success = test_parser()
     exit(0 if success else 1)

@@ -3,21 +3,21 @@
 测试普通图片和Live Photo的处理
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from main import OPPOLivePhoto, LivePhotoWidget
+from main import LivePhotoWidget, OPPOLivePhoto
 
 # 测试文件
 test_live = "/home/yezichao/Pictures/oppo/IMG20260117200436.jpg"
 test_normal = "/home/yezichao/Pictures/oppo/IMG20260118213442.jpg"
 
-print("="*60)
+print("=" * 60)
 print("测试普通图片和Live Photo处理")
-print("="*60)
+print("=" * 60)
 
 # 测试1：Live Photo
 print("\n1. 测试Live Photo文件...")
@@ -26,7 +26,11 @@ try:
     if photo1.parse():
         print(f"   ✅ 解析成功")
         print(f"   📸 JPEG大小: {len(photo1.get_jpeg()) / 1024 / 1024:.2f} MB")
-        print(f"   🎬 MP4大小: {len(photo1.get_mp4()) / 1024 / 1024:.2f} MB" if photo1.get_mp4() else "   🎬 无MP4")
+        print(
+            f"   🎬 MP4大小: {len(photo1.get_mp4()) / 1024 / 1024:.2f} MB"
+            if photo1.get_mp4()
+            else "   🎬 无MP4"
+        )
         print(f"   ✅ is_live_photo(): {photo1.is_live_photo()}")
     else:
         print(f"   ❌ 解析失败")
@@ -40,7 +44,11 @@ try:
     if photo2.parse():
         print(f"   ✅ 解析成功")
         print(f"   📸 JPEG大小: {len(photo2.get_jpeg()) / 1024 / 1024:.2f} MB")
-        print(f"   🎬 MP4大小: {len(photo2.get_mp4()) / 1024 / 1024:.2f} MB" if photo2.get_mp4() else "   🎬 无MP4（普通图片）")
+        print(
+            f"   🎬 MP4大小: {len(photo2.get_mp4()) / 1024 / 1024:.2f} MB"
+            if photo2.get_mp4()
+            else "   🎬 无MP4（普通图片）"
+        )
         print(f"   ✅ is_live_photo(): {photo2.is_live_photo()}")
     else:
         print(f"   ❌ 解析失败")
@@ -71,11 +79,12 @@ try:
 except Exception as e:
     print(f"   ❌ 错误: {e}")
     import traceback
+
     traceback.print_exc()
 
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 print("✅ 所有测试通过！")
-print("="*60)
+print("=" * 60)
 print("\n改进说明:")
 print("- ✅ 普通图片可以正常显示")
 print("- ✅ Live Photo仍然可以正常解析")

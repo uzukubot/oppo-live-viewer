@@ -3,8 +3,8 @@
 测试修复后的OPPO Live Photo Viewer
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # 添加项目路径
@@ -13,7 +13,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # 测试导入
 try:
     print("1. 测试模块导入...")
-    from main import OPPOLivePhoto, LivePhotoWidget, MainWindow
+    from main import LivePhotoWidget, MainWindow, OPPOLivePhoto
+
     print("   ✅ 所有模块导入成功")
 except Exception as e:
     print(f"   ❌ 导入失败: {e}")
@@ -42,8 +43,8 @@ except Exception as e:
 # 测试GUI组件（不实际显示窗口）
 print("\n3. 测试GUI组件初始化...")
 try:
-    from PyQt6.QtWidgets import QApplication
     from PyQt6.QtMultimedia import QMediaPlayer
+    from PyQt6.QtWidgets import QApplication
 
     # 创建应用实例
     app = QApplication.instance()
@@ -72,12 +73,13 @@ try:
 except Exception as e:
     print(f"   ❌ GUI组件测试失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
-print("\n" + "="*50)
+print("\n" + "=" * 50)
 print("✅ 所有测试通过！")
-print("="*50)
+print("=" * 50)
 print("\n修复后的可执行文件位置:")
 print("dist/OPPO-Live-Viewer")
 print("\n现在可以正常使用了！")

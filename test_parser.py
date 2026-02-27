@@ -38,11 +38,11 @@ def test_parser():
         print(f"📍 MP4偏移位置: {photo.mp4_offset} 字节")
 
         # 验证JPEG标记
-        if jpeg_data[:2] == b'\xff\xd8':
+        if jpeg_data[:2] == b"\xff\xd8":
             print("✅ JPEG格式验证通过")
 
         # 验证MP4标记
-        if b'ftypmp42' in mp4_data or b'ftypisom' in mp4_data:
+        if b"ftypmp42" in mp4_data or b"ftypisom" in mp4_data:
             print("✅ MP4格式验证通过")
 
         return True
@@ -51,6 +51,6 @@ def test_parser():
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = test_parser()
     sys.exit(0 if success else 1)

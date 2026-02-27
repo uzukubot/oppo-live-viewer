@@ -5,19 +5,42 @@ OPPO Live Photo Viewer
 支持macOS/Windows/Linux
 """
 
-import sys
 import os
-from pathlib import Path
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
-                             QHBoxLayout, QLabel, QFileDialog, QPushButton,
-                             QListWidget, QSplitter, QStackedWidget, QFrame,
-                             QMessageBox, QStatusBar, QCheckBox, QGroupBox)
-from PyQt6.QtCore import Qt, QUrl, QTimer, pyqtSignal
-from PyQt6.QtGui import QPixmap, QImage, QDragEnterEvent, QDropEvent, QColor, QAction, QShortcut, QKeySequence
-from PyQt6.QtGui import QPixmap, QImage, QDragEnterEvent, QDropEvent, QColor
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtMultimediaWidgets import QVideoWidget
+import sys
 from io import BytesIO
+from pathlib import Path
+
+from PyQt6.QtCore import Qt, QTimer, QUrl, pyqtSignal
+from PyQt6.QtGui import (
+    QAction,
+    QColor,
+    QDragEnterEvent,
+    QDropEvent,
+    QImage,
+    QKeySequence,
+    QPixmap,
+    QShortcut,
+)
+from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer
+from PyQt6.QtMultimediaWidgets import QVideoWidget
+from PyQt6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QFileDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QSplitter,
+    QStackedWidget,
+    QStatusBar,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class OPPOLivePhoto:
@@ -33,16 +56,16 @@ class OPPOLivePhoto:
     def parse(self):
         """解析Live Photo文件或普通图片"""
         try:
-            with open(self.filepath, 'rb') as f:
+            with open(self.filepath, "rb") as f:
                 data = f.read()
 
             # 搜索MP4起始标记 'ftypmp42'
-            mp4_marker = b'ftypmp42'
+            mp4_marker = b"ftypmp42"
             offset = data.find(mp4_marker)
 
             if offset == -1:
                 # 尝试其他可能的标记
-                mp4_marker = b'ftypisom'
+                mp4_marker = b"ftypisom"
                 offset = data.find(mp4_marker)
 
             if offset != -1:
@@ -140,7 +163,7 @@ class LivePhotoWidget(QWidget):
             scaled_pixmap = pixmap.scaled(
                 self.image_label.size(),
                 Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
+                Qt.TransformationMode.SmoothTransformation,
             )
             self.image_label.setPixmap(scaled_pixmap)
             self.image_label.setText("")
@@ -152,7 +175,8 @@ class LivePhotoWidget(QWidget):
         if mp4_data:
             # 保存到临时文件用于播放
             import tempfile
-            self.temp_mp4 = tempfile.NamedTemporaryFile(suffix='.mp4', delete=False)
+
+            self.temp_mp4 = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
             self.temp_mp4.write(mp4_data)
             self.temp_mp4.close()
 
@@ -221,7 +245,7 @@ class LivePhotoWidget(QWidget):
                 scaled_pixmap = pixmap.scaled(
                     self.image_label.size(),
                     Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation
+                    Qt.TransformationMode.SmoothTransformation,
                 )
                 self.image_label.setPixmap(scaled_pixmap)
 
@@ -334,7 +358,8 @@ class MainWindow(QMainWindow):
         self.collapse_button = QPushButton("◀")
         self.collapse_button.setFixedSize(30, 30)
         self.collapse_button.clicked.connect(self.toggle_left_panel)
-        self.collapse_button.setStyleSheet("""
+        self.collapse_button.setStyleSheet(
+            """
             QPushButton {
                 border: 1px solid #cccccc;
                 border-radius: 5px;
@@ -344,7 +369,8 @@ class MainWindow(QMainWindow):
             QPushButton:hover {
                 background-color: #e0e0e0;
             }
-        """)
+        """
+        )
         top_bar_layout.addWidget(self.collapse_button)
 
         # Live指示器
@@ -393,12 +419,16 @@ class MainWindow(QMainWindow):
         """更新Live指示器"""
         if is_live:
             self.live_label.setText("✅ Live Photo")
-            self.live_label.setStyleSheet("color: #2e7d32; font-size: 14px; font-weight: bold;")
+            self.live_label.setStyleSheet(
+                "color: #2e7d32; font-size: 14px; font-weight: bold;"
+            )
             self.loop_checkbox.setEnabled(True)
             self.mute_checkbox.setEnabled(True)
         else:
             self.live_label.setText("❌ Live Photo")
-            self.live_label.setStyleSheet("color: #757575; font-size: 14px; font-weight: bold;")
+            self.live_label.setStyleSheet(
+                "color: #757575; font-size: 14px; font-weight: bold;"
+            )
             self.loop_checkbox.setEnabled(False)
             self.mute_checkbox.setEnabled(False)
 
@@ -418,7 +448,7 @@ class MainWindow(QMainWindow):
             self,
             "选择图片文件",
             "",
-            "所有图片 (*.live.jpeg *.jpeg *.jpg);;所有文件 (*.*)"
+            "所有图片 (*.live.jpeg *.jpeg *.jpg);;所有文件 (*.*)",
         )
 
         if file_path:
@@ -441,7 +471,7 @@ class MainWindow(QMainWindow):
         self.folder_path_label.setText(f"当前文件夹: {self.current_folder}")
 
         # 查找所有可能的图片文件
-        patterns = ['*.live.jpeg', '*.jpeg', '*.jpg']
+        patterns = ["*.live.jpeg", "*.jpeg", "*.jpg"]
 
         for pattern in patterns:
             for file_path in sorted(self.current_folder.glob(pattern)):
@@ -507,7 +537,12 @@ class MainWindow(QMainWindow):
             self.is_left_panel_visible = False
         else:
             # 显示左侧面板
-            self.splitter.setSizes([self.left_panel_original_width, self.width() - self.left_panel_original_width])
+            self.splitter.setSizes(
+                [
+                    self.left_panel_original_width,
+                    self.width() - self.left_panel_original_width,
+                ]
+            )
             self.collapse_button.setText("◀")
             self.is_left_panel_visible = True
 
@@ -538,7 +573,11 @@ class MainWindow(QMainWindow):
             if hasattr(widget, "styleSheet"):
                 style = widget.styleSheet()
                 if "#f0f0f0" in style:
-                    widget.setStyleSheet(style.replace("#1e1e1e", "#f0f0f0").replace("#2d2d2d", "#f0f0f0"))
+                    widget.setStyleSheet(
+                        style.replace("#1e1e1e", "#f0f0f0").replace(
+                            "#2d2d2d", "#f0f0f0"
+                        )
+                    )
 
         # 文件列表
         self.file_list.setStyleSheet("")
@@ -553,7 +592,8 @@ class MainWindow(QMainWindow):
     def apply_dark_theme(self):
         """应用深色主题"""
         # 主窗口
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QMainWindow, QWidget {
                 background-color: #1e1e1e;
                 color: #e0e0e0;
@@ -593,7 +633,8 @@ class MainWindow(QMainWindow):
                 border-radius: 3px;
                 padding: 5px;
             }
-        """)
+        """
+        )
 
         # 右侧面板顶部栏
         for widget in self.findChildren(QWidget):
@@ -612,7 +653,7 @@ class MainWindow(QMainWindow):
 def main():
     """主函数"""
     app = QApplication(sys.argv)
-    app.setStyle('Fusion')
+    app.setStyle("Fusion")
 
     window = MainWindow()
     window.show()
@@ -620,5 +661,5 @@ def main():
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

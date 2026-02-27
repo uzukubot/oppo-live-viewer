@@ -4,9 +4,9 @@ OPPO Live Photo Viewer 打包脚本
 使用PyInstaller创建跨平台可执行文件
 """
 
+import platform
 import subprocess
 import sys
-import platform
 
 
 def build():
@@ -44,7 +44,9 @@ def build():
         import PyInstaller
     except ImportError:
         print("⚠️  PyInstaller 未安装，正在安装...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "pyinstaller"], check=True
+        )
 
     # 执行打包
     result = subprocess.run(cmd, check=False)
@@ -56,5 +58,5 @@ def build():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     build()

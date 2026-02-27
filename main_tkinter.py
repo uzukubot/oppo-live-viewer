@@ -4,14 +4,14 @@ OPPO Live Photo Viewer - Tkinter版本
 无需额外依赖，使用Python内置库
 """
 
-import sys
 import os
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-from pathlib import Path
-import subprocess
-import tempfile
 import platform
+import subprocess
+import sys
+import tempfile
+import tkinter as tk
+from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
 
 
 class OPPOLivePhoto:
@@ -26,16 +26,16 @@ class OPPOLivePhoto:
     def parse(self):
         """解析Live Photo文件"""
         try:
-            with open(self.filepath, 'rb') as f:
+            with open(self.filepath, "rb") as f:
                 data = f.read()
 
             # 搜索MP4起始标记 'ftypmp42'
-            mp4_marker = b'ftypmp42'
+            mp4_marker = b"ftypmp42"
             offset = data.find(mp4_marker)
 
             if offset == -1:
                 # 尝试其他可能的标记
-                mp4_marker = b'ftypisom'
+                mp4_marker = b"ftypisom"
                 offset = data.find(mp4_marker)
 
             if offset == -1:
@@ -106,15 +106,19 @@ class LivePhotoApp:
     def setup_left_panel(self, parent):
         """设置左侧面板"""
         # 标题
-        title = ttk.Label(parent, text="文件列表", font=('Arial', 14, 'bold'))
+        title = ttk.Label(parent, text="文件列表", font=("Arial", 14, "bold"))
         title.pack(pady=10)
 
         # 按钮
         btn_frame = ttk.Frame(parent)
         btn_frame.pack(fill=tk.X, padx=5, pady=5)
 
-        ttk.Button(btn_frame, text="打开文件", command=self.open_file).pack(fill=tk.X, pady=2)
-        ttk.Button(btn_frame, text="打开文件夹", command=self.open_folder).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame, text="打开文件", command=self.open_file).pack(
+            fill=tk.X, pady=2
+        )
+        ttk.Button(btn_frame, text="打开文件夹", command=self.open_folder).pack(
+            fill=tk.X, pady=2
+        )
 
         # 文件列表
         list_frame = ttk.Frame(parent)
@@ -125,22 +129,28 @@ class LivePhotoApp:
 
         self.file_listbox = tk.Listbox(list_frame, yscrollcommand=scrollbar.set)
         self.file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.file_listbox.bind('<<ListboxSelect>>', self.on_file_selected)
+        self.file_listbox.bind("<<ListboxSelect>>", self.on_file_selected)
 
         scrollbar.config(command=self.file_listbox.yview)
 
     def setup_right_panel(self, parent):
         """设置右侧面板"""
         # 图片显示区域
-        self.image_label = tk.Label(parent, text="请选择一个Live Photo文件", bg="#f0f0f0")
+        self.image_label = tk.Label(
+            parent, text="请选择一个Live Photo文件", bg="#f0f0f0"
+        )
         self.image_label.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
         # 控制按钮
         control_frame = ttk.Frame(parent)
         control_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        ttk.Button(control_frame, text="播放Live视频", command=self.play_video).pack(side=tk.LEFT, padx=5)
-        ttk.Button(control_frame, text="查看静态图", command=self.show_static).pack(side=tk.LEFT, padx=5)
+        ttk.Button(control_frame, text="播放Live视频", command=self.play_video).pack(
+            side=tk.LEFT, padx=5
+        )
+        ttk.Button(control_frame, text="查看静态图", command=self.show_static).pack(
+            side=tk.LEFT, padx=5
+        )
 
         # 状态栏
         self.status_var = tk.StringVar(value="就绪")
@@ -160,8 +170,8 @@ class LivePhotoApp:
             filetypes=[
                 ("Live Photo", "*.live.jpeg"),
                 ("JPEG", "*.jpeg *.jpg"),
-                ("所有文件", "*.*")
-            ]
+                ("所有文件", "*.*"),
+            ],
         )
 
         if file_path:
@@ -179,7 +189,7 @@ class LivePhotoApp:
         self.file_listbox.delete(0, tk.END)
 
         folder = Path(folder_path)
-        patterns = ['*.live.jpeg', '*.jpeg', '*.jpg']
+        patterns = ["*.live.jpeg", "*.jpeg", "*.jpg"]
 
         for pattern in patterns:
             for file_path in sorted(folder.glob(pattern)):
@@ -220,13 +230,14 @@ class LivePhotoApp:
             if self.temp_jpeg and os.path.exists(self.temp_jpeg):
                 os.unlink(self.temp_jpeg)
 
-            self.temp_jpeg = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
+            self.temp_jpeg = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
             self.temp_jpeg.write(jpeg_data)
             self.temp_jpeg.close()
 
             # 使用PIL加载图片（如果可用）
             try:
                 from PIL import Image, ImageTk
+
                 image = Image.open(self.temp_jpeg.name)
 
                 # 缩放图片适应窗口
@@ -240,7 +251,9 @@ class LivePhotoApp:
                 self.image_label.image = photo  # 保持引用
             except ImportError:
                 # PIL不可用，使用外部查看器
-                self.image_label.config(image="", text="静态图片已加载，点击下方按钮使用外部查看器打开")
+                self.image_label.config(
+                    image="", text="静态图片已加载，点击下方按钮使用外部查看器打开"
+                )
 
         except Exception as e:
             self.image_label.config(text=f"加载图片失败: {str(e)}")
@@ -257,7 +270,7 @@ class LivePhotoApp:
             if self.temp_mp4 and os.path.exists(self.temp_mp4):
                 os.unlink(self.temp_mp4)
 
-            self.temp_mp4 = tempfile.NamedTemporaryFile(suffix='.mp4', delete=False)
+            self.temp_mp4 = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
             self.temp_mp4.write(mp4_data)
             self.temp_mp4.close()
 
@@ -266,11 +279,11 @@ class LivePhotoApp:
             system = platform.system()
 
             if system == "Linux":
-                subprocess.run(['xdg-open', self.temp_mp4.name], check=True)
+                subprocess.run(["xdg-open", self.temp_mp4.name], check=True)
             elif system == "Windows":
                 os.startfile(self.temp_mp4.name)
             elif system == "Darwin":  # macOS
-                subprocess.run(['open', self.temp_mp4.name], check=True)
+                subprocess.run(["open", self.temp_mp4.name], check=True)
 
         except Exception as e:
             messagebox.showerror("错误", f"播放视频失败: {str(e)}")
@@ -292,5 +305,5 @@ def main():
     root.mainloop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

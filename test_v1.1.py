@@ -3,14 +3,14 @@
 测试v1.1版本的解析和加载逻辑
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent))
 
-from main import OPPOLivePhoto, LivePhotoWidget
+from main import LivePhotoWidget, OPPOLivePhoto
 
 # 测试文件
 test_file = "/home/yezichao/.openclaw/workspace/20260227-144315.live.jpeg"
@@ -19,9 +19,9 @@ if not Path(test_file).exists():
     print(f"❌ 测试文件不存在: {test_file}")
     sys.exit(1)
 
-print("="*50)
+print("=" * 50)
 print("测试 v1.1 改进功能")
-print("="*50)
+print("=" * 50)
 
 # 测试1：解析器
 print("\n1. 测试解析器...")
@@ -37,6 +37,7 @@ try:
 except Exception as e:
     print(f"   ❌ 解析错误: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -54,6 +55,7 @@ try:
 except Exception as e:
     print(f"   ❌ 创建失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -65,6 +67,7 @@ try:
 except Exception as e:
     print(f"   ❌ 加载失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -79,6 +82,7 @@ try:
 except Exception as e:
     print(f"   ❌ 循环控制失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -93,12 +97,13 @@ try:
 except Exception as e:
     print(f"   ❌ 静音控制失败: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
-print("\n" + "="*50)
+print("\n" + "=" * 50)
 print("✅ 所有测试通过！")
-print("="*50)
+print("=" * 50)
 print("\n如果仍然闪退，请检查GUI环境:")
 print("  echo $DISPLAY")
 print("如果为空，说明没有GUI环境")
