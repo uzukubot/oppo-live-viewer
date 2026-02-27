@@ -577,6 +577,15 @@ class MainWindow(QMainWindow):
             super().wheelEvent(event)
             return
 
+        # 检测鼠标位置是否在文件列表区域内
+        cursor_pos = self.mapFromGlobal(self.cursor().pos())
+        list_rect = self.left_panel.rect()
+
+        # 如果鼠标在左侧面板区域内，让列表自己处理滚动
+        if list_rect.contains(cursor_pos):
+            super().wheelEvent(event)
+            return
+
         # 获取当前选中行
         current_row = self.file_list.currentRow()
 
