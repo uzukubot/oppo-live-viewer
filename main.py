@@ -570,6 +570,31 @@ class MainWindow(QMainWindow):
         self.theme_shortcut = QShortcut(QKeySequence("D"), self)
         self.theme_shortcut.activated.connect(self.toggle_theme)
 
+    def wheelEvent(self, event):
+        """鼠标滚轮事件 - 在文件夹内切换文件"""
+        # 只有在文件列表有内容时才响应
+        if self.file_list.count() == 0:
+            super().wheelEvent(event)
+            return
+
+        # 获取当前选中行
+        current_row = self.file_list.currentRow()
+
+        # 根据滚轮方向切换文件
+        # 滚轮向上（delta > 0）: 上一张
+        # 滚轮向下（delta < 0）: 下一张
+        delta = event.angleDelta().y()
+
+        if delta > 0 and current_row > 0:
+            # 上一张
+            self.file_list.setCurrentRow(current_row - 1)
+        elif delta < 0 and current_row < self.file_list.count() - 1:
+            # 下一张
+            self.file_list.setCurrentRow(current_row + 1)
+
+        # 事件已处理，不传递给父类
+        event.accept()
+
     def toggle_theme(self):
         """切换深色/浅色模式"""
         self.dark_mode = not self.dark_mode
