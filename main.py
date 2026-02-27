@@ -325,6 +325,7 @@ class MainWindow(QMainWindow):
 
         # 顶部工具栏（包含折叠按钮和Live指示器）
         top_bar = QWidget()
+        top_bar.setObjectName("top_bar")  # 添加objectName用于主题切换
         top_bar.setFixedHeight(40)
         top_bar.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
         top_bar_layout = QHBoxLayout(top_bar)
@@ -366,6 +367,7 @@ class MainWindow(QMainWindow):
 
         # 底部控制栏（固定高度）
         bottom_bar = QWidget()
+        bottom_bar.setObjectName("bottom_bar")  # 添加objectName用于主题切换
         bottom_bar.setFixedHeight(40)
         bottom_bar.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
         bottom_bar_layout = QHBoxLayout(bottom_bar)
@@ -406,6 +408,22 @@ class MainWindow(QMainWindow):
         """循环播放改变"""
         loop = state == Qt.CheckState.Checked.value
         self.photo_widget.set_loop_playback(loop)
+        # 如果当前正在播放，重新加载当前文件以使设置生效
+        if self.photo_widget.current_photo:
+            self.reload_current_photo()
+
+    def reload_current_photo(self):
+        """重新加载当前显示的图片"""
+        if self.photo_widget.current_photo:
+            # 保存当前的播放状态
+            was_playing = self.photo_widget.is_playing
+            
+            # 如果正在播放，先停止
+            if was_playing:
+                self.photo_widget.stop_video()
+            
+            # 重新加载
+            self.photo_widget.load_photo(self.photo_widget.current_photo)
 
     def on_mute_changed(self, state):
         """静音改变"""
@@ -533,12 +551,34 @@ class MainWindow(QMainWindow):
         # 主窗口
         self.setStyleSheet("")
 
-        # 右侧面板顶部栏
-        for widget in self.findChildren(QWidget):
-            if hasattr(widget, "styleSheet"):
-                style = widget.styleSheet()
-                if "#f0f0f0" in style:
-                    widget.setStyleSheet(style.replace("#1e1e1e", "#f0f0f0").replace("#2d2d2d", "#f0f0f0"))
+        # 顶部工具栏 - 固定样式
+        self.findChild(QWidget, "top_bar").setStyleSheet("""
+            QWidget {
+                background-color: #f0f0f0;
+                border-radius: 5px;
+            }
+        """)
+
+        # 底部控制栏 - 固定样式
+        self.findChild(QWidget, "bottom_bar").setStyleSheet("""
+            QWidget {
+                background-color: #f0f0f0;
+                border-radius: 5px;
+            }
+        """)
+
+        # 折叠按钮
+        self.collapse_button.setStyleSheet("""
+            QPushButton {
+                border: 1px solid #cccccc;
+                border-radius: 5px;
+                background-color: #ffffff;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """)
 
         # 文件列表
         self.file_list.setStyleSheet("")
@@ -549,6 +589,13 @@ class MainWindow(QMainWindow):
 
         # 提示文字
         self.theme_hint.setText("按 D 键切换深色模式")
+        self.theme_hint.setStyleSheet("font-size: 11px; color: #888888;")
+
+        # Live指示器 - 浅色模式下恢复默认颜色
+        if self.photo_widget.current_photo and self.photo_widget.current_photo.is_live_photo():
+            self.live_label.setStyleSheet("color: #2e7d32; font-size: 14px; font-weight: bold;")
+        else:
+            self.live_label.setStyleSheet("color: #757575; font-size: 14px; font-weight: bold;")
 
     def apply_dark_theme(self):
         """应用深色主题"""
@@ -595,18 +642,48 @@ class MainWindow(QMainWindow):
             }
         """)
 
-        # 右侧面板顶部栏
-        for widget in self.findChildren(QWidget):
-            if hasattr(widget, "styleSheet"):
-                style = widget.styleSheet()
-                if "#f0f0f0" in style:
-                    widget.setStyleSheet(style.replace("#f0f0f0", "#2d2d2d"))
+        # 顶部工具栏 - 深色
+        self.findChild(QWidget, "top_bar").setStyleSheet("""
+            QWidget {
+                background-color: #2d2d2d;
+                border-radius: 5px;
+            }
+        """)
+
+        # 底部控制栏 - 深色
+        self.findChild(QWidget, "bottom_bar").setStyleSheet("""
+            QWidget {
+                background-color: #2d2d2d;
+                border-radius: 5px;
+            }
+        """)
+
+        # 折叠按钮 - 深色
+        self.collapse_button.setStyleSheet("""
+            QPushButton {
+                border: 1px solid #4a4a4a;
+                border-radius: 5px;
+                background-color: #3d3d3d;
+                color: #e0e0e0;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #4a4a4a;
+            }
+        """)
 
         # 图片显示背景
         self.photo_widget.image_label.setStyleSheet("background-color: #000000;")
 
         # 提示文字
         self.theme_hint.setText("按 D 键切换浅色模式")
+        self.theme_hint.setStyleSheet("font-size: 11px; color: #888888;")
+
+        # Live指示器 - 深色模式下使用较亮的颜色
+        if self.photo_widget.current_photo and self.photo_widget.current_photo.is_live_photo():
+            self.live_label.setStyleSheet("color: #4caf50; font-size: 14px; font-weight: bold;")
+        else:
+            self.live_label.setStyleSheet("color: #9e9e9e; font-size: 14px; font-weight: bold;")
 
 
 def main():
