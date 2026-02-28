@@ -535,16 +535,20 @@ class MainWindow(QMainWindow):
         # 更新文件夹路径标签
         self.folder_path_label.setText(f"当前文件夹: {self.current_folder}")
 
+        # 使用集合避免重复文件
+        seen_files = set()
+
         # 查找所有可能的图片文件
         patterns = ["*.live.jpeg", "*.jpeg", "*.jpg"]
 
         for pattern in patterns:
             for file_path in sorted(self.current_folder.glob(pattern)):
-                # 只显示文件名
                 filename = file_path.name
-                # 创建列表项，存储完整路径在数据中
-                item = self.file_list.addItem(filename)
-                self.current_files[filename] = str(file_path)
+                # 避免重复添加
+                if filename not in seen_files:
+                    seen_files.add(filename)
+                    self.file_list.addItem(filename)
+                    self.current_files[filename] = str(file_path)
 
         if self.file_list.count() > 0:
             self.statusBar().showMessage(f"找到 {self.file_list.count()} 个文件")
