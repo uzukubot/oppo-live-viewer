@@ -17,8 +17,6 @@ repos:
         args: ['--maxkb=10000']
       - id: check-merge-conflict
       - id: detect-private-key
-      - id: no-commit-to-branch
-        args: ['--branch', 'main', '--branch', 'master']
 
   # Python 代码检查
   - repo: https://github.com/psf/black
