@@ -128,13 +128,19 @@ def smart_scale_pixmap(jpeg_data: bytes, target_size: tuple) -> QPixmap:
     new_width = int(orig_width * ratio)
     new_height = int(orig_height * ratio)
 
-    # 选择缩放算法
-    if new_width < orig_width or new_height < orig_height:
-        # 缩小：使用 Mitchell 算法
-        resample = Image.Resampling.BICUBIC  # Mitchell 近似
-    else:
-        # 放大：使用 Lanczos 算法
-        resample = Image.Resampling.LANCZOS
+    # 选择缩放算法（兼容旧版本 Pillow）
+    try:
+        # Pillow >= 9.1.0
+        if new_width < orig_width or new_height < orig_height:
+            resample = Image.Resampling.BICUBIC
+        else:
+            resample = Image.Resampling.LANCZOS
+    except AttributeError:
+        # Pillow < 9.1.0
+        if new_width < orig_width or new_height < orig_height:
+            resample = Image.BICUBIC
+        else:
+            resample = Image.LANCZOS
 
     # 缩放图片
     scaled_img = img.resize((new_width, new_height), resample)
