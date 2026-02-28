@@ -17,6 +17,7 @@ from PyQt6.QtGui import (
     QColor,
     QDragEnterEvent,
     QDropEvent,
+    QIcon,
     QImage,
     QKeySequence,
     QPixmap,
@@ -398,24 +399,24 @@ class MainWindow(QMainWindow):
         top_bar = QWidget()
         top_bar.setObjectName("top_bar")  # 添加objectName用于主题切换
         top_bar.setFixedHeight(40)
-        top_bar.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
+        top_bar.setStyleSheet("background-color: #f5f5f5; border-radius: 5px;")
         top_bar_layout = QHBoxLayout(top_bar)
         top_bar_layout.setContentsMargins(10, 0, 10, 0)
 
-        # 折叠按钮
+        # 折叠按钮 - 固定样式不随主题变化
         self.collapse_button = QPushButton("◀")
         self.collapse_button.setFixedSize(30, 30)
         self.collapse_button.clicked.connect(self.toggle_left_panel)
         self.collapse_button.setStyleSheet(
             """
             QPushButton {
-                border: 1px solid #cccccc;
+                border: 1px solid #d0d0d0;
                 border-radius: 5px;
                 background-color: #ffffff;
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: #e0e0e0;
+                background-color: #e8e8e8;
             }
         """
         )
@@ -432,6 +433,26 @@ class MainWindow(QMainWindow):
         self.theme_hint.setStyleSheet("font-size: 11px; color: #888888;")
         top_bar_layout.addWidget(self.theme_hint)
 
+        # 主题切换按钮 (sun/moon)
+        self.theme_button = QPushButton("🌙")
+        self.theme_button.setFixedSize(36, 30)
+        self.theme_button.clicked.connect(self.toggle_theme)
+        self.theme_button.setToolTip("切换亮/暗主题")
+        self.theme_button.setStyleSheet(
+            """
+            QPushButton {
+                border: 1px solid #d0d0d0;
+                border-radius: 5px;
+                background-color: #ffffff;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+            }
+        """
+        )
+        top_bar_layout.addWidget(self.theme_button)
+
         layout.addWidget(top_bar)
 
         # 图片展示组件
@@ -442,7 +463,7 @@ class MainWindow(QMainWindow):
         bottom_bar = QWidget()
         bottom_bar.setObjectName("bottom_bar")  # 添加objectName用于主题切换
         bottom_bar.setFixedHeight(40)
-        bottom_bar.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
+        bottom_bar.setStyleSheet("background-color: #f5f5f5; border-radius: 5px;")
         bottom_bar_layout = QHBoxLayout(bottom_bar)
         bottom_bar_layout.setContentsMargins(10, 0, 10, 0)
 
@@ -662,50 +683,111 @@ class MainWindow(QMainWindow):
 
     def apply_light_theme(self):
         """应用浅色主题"""
-        # 主窗口
-        self.setStyleSheet("")
+        # 主窗口 - 使用统一的浅色背景，但文件列表区域用更浅的颜色
+        self.setStyleSheet(
+            """
+            QMainWindow {
+                background-color: #f5f5f5;
+            }
+            QLabel {
+                color: #333333;
+            }
+            QPushButton {
+                background-color: #ffffff;
+                color: #333333;
+                border: 1px solid #d0d0d0;
+                padding: 5px 15px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+            }
+            QCheckBox {
+                color: #333333;
+            }
+            QStatusBar {
+                color: #666666;
+            }
+        """
+        )
 
-        # 顶部工具栏 - 固定样式
+        # 顶部工具栏 - 与文件列表同色
         self.findChild(QWidget, "top_bar").setStyleSheet(
             """
             QWidget {
-                background-color: #f0f0f0;
+                background-color: #f5f5f5;
                 border-radius: 5px;
             }
         """
         )
 
-        # 底部控制栏 - 固定样式
+        # 底部控制栏 - 与文件列表同色
         self.findChild(QWidget, "bottom_bar").setStyleSheet(
             """
             QWidget {
-                background-color: #f0f0f0;
+                background-color: #f5f5f5;
                 border-radius: 5px;
             }
         """
         )
 
-        # 折叠按钮
+        # 折叠按钮 - 固定样式不随主题变化
         self.collapse_button.setStyleSheet(
             """
             QPushButton {
-                border: 1px solid #cccccc;
+                border: 1px solid #d0d0d0;
                 border-radius: 5px;
                 background-color: #ffffff;
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: #e0e0e0;
+                background-color: #e8e8e8;
             }
         """
         )
 
-        # 文件列表
-        self.file_list.setStyleSheet("")
-        self.left_panel.setStyleSheet("")
+        # 主题切换按钮 - 亮色模式显示月亮（可切换到暗色）
+        self.theme_button.setText("🌙")
+        self.theme_button.setStyleSheet(
+            """
+            QPushButton {
+                border: 1px solid #d0d0d0;
+                border-radius: 5px;
+                background-color: #ffffff;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+            }
+        """
+        )
+
+        # 文件列表 - 固定行距
+        self.file_list.setStyleSheet(
+            """
+            QListWidget {
+                background-color: #ffffff;
+                color: #333333;
+                border: 1px solid #d0d0d0;
+                font-size: 13px;
+            }
+            QListWidget::item {
+                padding: 8px 5px;
+                border-bottom: 1px solid #eeeeee;
+            }
+            QListWidget::item:selected {
+                background-color: #e3f2fd;
+                color: #1976d2;
+            }
+            QListWidget::item:hover {
+                background-color: #f5f5f5;
+            }
+        """
+        )
+        self.left_panel.setStyleSheet("background-color: #f5f5f5;")
 
         # 图片显示背景
-        self.photo_widget.image_label.setStyleSheet("background-color: #1e1e1e;")
+        self.photo_widget.image_label.setStyleSheet("background-color: #2a2a2a;")
 
         # 提示文字
         self.theme_hint.setText("按 D 键切换深色模式")
@@ -729,24 +811,11 @@ class MainWindow(QMainWindow):
         # 主窗口
         self.setStyleSheet(
             """
-            QMainWindow, QWidget {
+            QMainWindow {
                 background-color: #1e1e1e;
-                color: #e0e0e0;
             }
             QLabel {
                 color: #e0e0e0;
-            }
-            QListWidget {
-                background-color: #2d2d2d;
-                color: #e0e0e0;
-                border: 1px solid #3d3d3d;
-            }
-            QListWidget::item {
-                padding: 5px;
-            }
-            QListWidget::item:selected {
-                background-color: #4a4a4a;
-                color: #ffffff;
             }
             QPushButton {
                 background-color: #3d3d3d;
@@ -761,12 +830,8 @@ class MainWindow(QMainWindow):
             QCheckBox {
                 color: #e0e0e0;
             }
-            QLineEdit {
-                background-color: #2d2d2d;
-                color: #e0e0e0;
-                border: 1px solid #3d3d3d;
-                border-radius: 3px;
-                padding: 5px;
+            QStatusBar {
+                color: #888888;
             }
         """
         )
@@ -791,7 +856,7 @@ class MainWindow(QMainWindow):
         """
         )
 
-        # 折叠按钮 - 深色
+        # 折叠按钮 - 固定样式不随主题变化
         self.collapse_button.setStyleSheet(
             """
             QPushButton {
@@ -806,6 +871,47 @@ class MainWindow(QMainWindow):
             }
         """
         )
+
+        # 主题切换按钮 - 暗色模式显示太阳（可切换到亮色）
+        self.theme_button.setText("☀️")
+        self.theme_button.setStyleSheet(
+            """
+            QPushButton {
+                border: 1px solid #4a4a4a;
+                border-radius: 5px;
+                background-color: #3d3d3d;
+                color: #e0e0e0;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #4a4a4a;
+            }
+        """
+        )
+
+        # 文件列表 - 固定行距
+        self.file_list.setStyleSheet(
+            """
+            QListWidget {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+                border: 1px solid #3d3d3d;
+                font-size: 13px;
+            }
+            QListWidget::item {
+                padding: 8px 5px;
+                border-bottom: 1px solid #3a3a3a;
+            }
+            QListWidget::item:selected {
+                background-color: #4a4a4a;
+                color: #ffffff;
+            }
+            QListWidget::item:hover {
+                background-color: #3a3a3a;
+            }
+        """
+        )
+        self.left_panel.setStyleSheet("background-color: #1e1e1e;")
 
         # 图片显示背景
         self.photo_widget.image_label.setStyleSheet("background-color: #000000;")
