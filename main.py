@@ -147,7 +147,9 @@ def smart_scale_pixmap(jpeg_data: bytes, target_size: tuple) -> QPixmap:
 
     # 转换为 QPixmap
     data = scaled_img.tobytes("raw", "RGB")
-    qimage = QImage(data, new_width, new_height, new_width * 3, QImage.Format.Format_RGB888)
+    qimage = QImage(
+        data, new_width, new_height, new_width * 3, QImage.Format.Format_RGB888
+    )
     return QPixmap.fromImage(qimage)
 
 
@@ -206,8 +208,7 @@ class LivePhotoWidget(QWidget):
         if jpeg_data:
             try:
                 scaled_pixmap = smart_scale_pixmap(
-                    jpeg_data, 
-                    (self.image_label.width(), self.image_label.height())
+                    jpeg_data, (self.image_label.width(), self.image_label.height())
                 )
                 self.image_label.setPixmap(scaled_pixmap)
                 self.image_label.setText("")
@@ -289,8 +290,7 @@ class LivePhotoWidget(QWidget):
             if jpeg_data:
                 try:
                     scaled_pixmap = smart_scale_pixmap(
-                        jpeg_data,
-                        (self.image_label.width(), self.image_label.height())
+                        jpeg_data, (self.image_label.width(), self.image_label.height())
                     )
                     self.image_label.setPixmap(scaled_pixmap)
                 except Exception:
