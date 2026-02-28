@@ -22,13 +22,14 @@ jobs:
 
     - name: Install PyQt6 and PyInstaller
       run: |
-        pip install PyQt6 pyinstaller
+        pip install PyQt6 Pillow pyinstaller
 
     - name: Verify PyQt6 installation
       run: |
         python -c "from PyQt6.QtWidgets import QApplication; print('QtWidgets: OK')"
         python -c "from PyQt6.QtMultimedia import QMediaPlayer; print('QtMultimedia: OK')"
         python -c "from PyQt6.QtMultimediaWidgets import QVideoWidget; print('QtMultimediaWidgets: OK')"
+        python -c "from PIL import Image; print('Pillow: OK')"
 
     - name: Build Windows executable
       run: |
@@ -65,7 +66,7 @@ jobs:
 
     - name: Install PyQt6 and PyInstaller
       run: |
-        pip install PyQt6 pyinstaller
+        pip install PyQt6 Pillow pyinstaller
 
     - name: Build macOS executable
       run: |
@@ -97,7 +98,7 @@ jobs:
 
     - name: Install PyQt6 and PyInstaller
       run: |
-        pip install PyQt6 pyinstaller
+        pip install PyQt6 Pillow pyinstaller
 
     - name: Build Linux executable
       run: |
